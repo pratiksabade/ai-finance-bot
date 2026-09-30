@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | Personal Finance Advisor Bot</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.ico">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <!-- Chart.js for financial data visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<div class="app-layout">
+  <!-- Left Institutional Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <svg class="nav-brand-logo" viewBox="0 0 32 32" fill="none">
+        <rect width="32" height="32" rx="4" fill="#0f172a"/>
+        <path d="M8 8h16M8 13h12M8 18h6l6 6M14 8v10" stroke="#10b981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="23" cy="9" r="1.5" fill="#38bdf8"/>
+      </svg>
+      <div>
+        <div class="sidebar-brand-name">Personal Finance</div>
+        <div class="sidebar-brand-tag">Advisor Bot &bull; INR (₹)</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="nav-item active" data-view="dashboard">
+        <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>Dashboard</span>
+      </a>
+      <a class="nav-item" data-view="income">
+        <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+        <span>Income</span>
+      </a>
+      <a class="nav-item" data-view="expenses">
+        <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+        <span>Expenses</span>
+      </a>
+      <a class="nav-item" data-view="budgets">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        <span>Budget Planner</span>
+      </a>
+      <a class="nav-item" data-view="goals">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+        <span>Savings Goals</span>
+      </a>
+      <a class="nav-item" data-view="ai-advisor">
+        <svg class="icon" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        <span>AI Advisor</span>
+      </a>
+      <a class="nav-item" data-view="settings">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>System & Settings</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-profile-info">
+        <div class="user-profile-name" id="user-display-name">{{ user_name }}</div>
+        <div class="user-profile-tag">Session Active</div>
+      </div>
+      <button id="logout-btn" class="btn btn-secondary btn-sm" title="Log Out" style="padding: 4px 8px;">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main View Area -->
+  <div class="main-wrapper">
+    <!-- Top Bar -->
+    <header class="top-bar">
+      <div class="page-context-title">
+        <span id="active-view-title">Dashboard Overview</span>
+      </div>
+      <div class="top-bar-controls">
+        <div class="currency-badge">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <span>INR (₹)</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <label for="global-month-picker" style="font-size: 12px; color: var(--text-subtle);">Month:</label>
+          <input type="month" id="global-month-picker" class="form-control" style="padding: 4px 8px; font-size: 13px; width: 140px;">
+        </div>
+      </div>
+    </header>
+
+    <!-- Content Views Body -->
+    <main class="content-body">
+
+      <!-- =================================================================
+           VIEW 1: DASHBOARD
+           ================================================================= -->
+      <section id="view-dashboard" class="app-view active">
+        <!-- Demo Baseline Notice -->
+        <div id="demo-banner" class="badge-neutral" style="display:none; width: 100%; padding: 10px 14px; margin-bottom: 20px; border-left: 3px solid #3b82f6;">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <span>Showing realistic demo baseline data. Start adding your real income and expenses to track your personal ledger.</span>
+        </div>
+
+        <!-- 5 Key Metrics Cards -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-label">
+              <span>Monthly Income</span>
+              <svg class="icon icon-sm text-income" viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+            </div>
+            <div class="metric-value text-income" id="metric-income">₹0.00</div>
+            <div class="metric-subtext">All verified income streams</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-label">
+              <span>Total Expenses</span>
+              <svg class="icon icon-sm text-expense" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+            </div>
+            <div class="metric-value text-expense" id="metric-expense">₹0.00</div>
+            <div class="metric-subtext">Categorized monthly debits</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-label">
+              <span>Current Savings</span>
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+            </div>
+            <div class="metric-value" id="metric-savings">₹0.00</div>
+            <div class="metric-subtext" id="metric-savings-pct">Savings Ratio: 0.0%</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-label">
+              <span>Remaining Budget</span>
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            </div>
+            <div class="metric-value" id="metric-budget-remaining">₹0.00</div>
+            <div class="metric-subtext" id="metric-budget-total">Budget Limit: ₹0.00</div>
+          </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-header">
+              <div class="chart-title">Income vs Expenses (6 Months)</div>
+              <span class="badge badge-neutral">INR (₹)</span>
+            </div>
+            <div class="chart-container">
+              <canvas id="trendChart"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-header">
+              <div class="chart-title">Expense Category Breakdown</div>
+              <span class="badge badge-neutral">Current Month</span>
+            </div>
+            <div class="chart-container">
+              <canvas id="categoryChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Quick Insight Highlight Card -->
+        <div class="metric-card" style="margin-bottom: 24px; border-left: 4px solid #1d4ed8;">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <div style="font-weight: 600; font-size: 14px; margin-bottom: 2px; display: flex; align-items: center; gap: 6px;">
+                <svg class="icon icon-sm" style="color: #1d4ed8;" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                AI Financial Diagnostic Ready
+              </div>
+              <div style="font-size: 13px; color: var(--text-muted);" id="ai-quick-summary">
+                Analyze your cash flow, identify expense leakage, and receive optimization recommendations in INR.
+              </div>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="jump-to-ai-btn">
+              View AI Advisor
+            </button>
+          </div>
+        </div>
+
+        <!-- Recent Transactions Ledger Table -->
+        <div class="table-card">
+          <div class="table-header-toolbar">
+            <h3 style="font-size: 15px;">Recent Financial Transactions</h3>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-primary btn-sm" onclick="showModal('add-income-modal')">+ Add Income</button>
+              <button class="btn btn-secondary btn-sm" onclick="showModal('add-expense-modal')">+ Log Expense</button>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th>Category / Source</th>
+                  <th>Description</th>
+                  <th class="text-right">Amount (₹)</th>
+                </tr>
+              </thead>
+              <tbody id="recent-transactions-tbody">
+                <tr><td colspan="5" class="empty-state">Loading transactions...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================
+           VIEW 2: INCOME MANAGEMENT
+           ================================================================= -->
+      <section id="view-income" class="app-view">
+        <div class="table-card">
+          <div class="table-header-toolbar">
+            <div>
+              <h3 style="font-size: 15px;">Income Streams & Payroll</h3>
+              <p style="font-size: 12px; margin-top: 2px;">Record recurring salaries, consulting milestones, dividends, and business profits.</p>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="showModal('add-income-modal')">
+              + Add Income Record
+            </button>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Source</th>
+                  <th>Description</th>
+                  <th class="text-right">Amount (₹)</th>
+                  <th class="text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="income-table-tbody">
+                <tr><td colspan="5" class="empty-state">No income records logged yet.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================
+           VIEW 3: EXPENSE MANAGEMENT
+           ================================================================= -->
+      <section id="view-expenses" class="app-view">
+        <div class="table-card">
+          <div class="table-header-toolbar">
+            <div>
+              <h3 style="font-size: 15px;">Expense Ledger</h3>
+              <p style="font-size: 12px; margin-top: 2px;">Track and categorize debits across 9 standard expenditure categories.</p>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <select id="expense-category-filter" class="form-control" style="font-size: 13px; padding: 4px 8px; width: 140px;">
+                <option value="All">All Categories</option>
+              </select>
+              <button class="btn btn-primary btn-sm" onclick="showModal('add-expense-modal')">
+                + Log Expense
+              </button>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Category</th>
+                  <th>Description</th>
+                  <th class="text-right">Amount (₹)</th>
+                  <th class="text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="expense-table-tbody">
+                <tr><td colspan="5" class="empty-state">No expense records logged yet.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================
+           VIEW 4: BUDGET PLANNER
+           ================================================================= -->
+      <section id="view-budgets" class="app-view">
+        <div class="table-card">
+          <div class="table-header-toolbar">
+            <div>
+              <h3 style="font-size: 15px;">Monthly Category Budgets</h3>
+              <p style="font-size: 12px; margin-top: 2px;">Enforce spending discipline. Compare planned limits against actual spending in real-time.</p>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="showModal('set-budget-modal')">
+              + Set Category Budget
+            </button>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Category</th>
+                  <th class="text-right">Budget Limit (₹)</th>
+                  <th class="text-right">Actual Spent (₹)</th>
+                  <th class="text-right">Remaining (₹)</th>
+                  <th style="min-width: 140px;">Utilization</th>
+                  <th>Status</th>
+                  <th class="text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="budget-table-tbody">
+                <tr><td colspan="7" class="empty-state">No category budgets defined for this month.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================
+           VIEW 5: SAVINGS GOALS
+           ================================================================= -->
+      <section id="view-goals" class="app-view">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <div>
+            <h2 style="font-size: 18px;">Capital & Savings Goals</h2>
+            <p style="font-size: 13px;">Accumulate reserves for emergency funds, capital assets, or personal objectives.</p>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="showModal('add-goal-modal')">
+            + Create New Goal
+          </button>
+        </div>
+
+        <div id="goals-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px;">
+          <!-- Dynamically populated goal cards -->
+        </div>
+      </section>
+
+      <!-- =================================================================
+           VIEW 6: AI ADVISOR
+           ================================================================= -->
+      <section id="view-ai-advisor" class="app-view">
+        <div class="ai-advisor-panel">
+          <div class="ai-advisor-header">
+            <div>
+              <h2 style="font-size: 16px; display: flex; align-items: center; gap: 8px;">
+                <svg class="icon" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                AI Financial Advisor Engine
+              </h2>
+              <p style="font-size: 12px; margin-top: 2px;">Powered by Google Gemini API &bull; Automated Cash Flow Diagnostics</p>
+            </div>
+            <button id="run-ai-analysis-btn" class="btn btn-primary">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Run AI Diagnostic
+            </button>
+          </div>
+
+          <div class="ai-advisor-body">
+            <!-- Mandatory Legal Disclaimer -->
+            <div class="ai-disclaimer-notice">
+              <strong>STATUTORY DISCLAIMER:</strong> AI-generated information is for educational and planning purposes and should not be considered professional financial advice. This system does not execute financial transactions or securities trading.
+            </div>
+
+            <!-- AI Status Alert -->
+            <div id="ai-status-indicator" style="margin-bottom: 16px;"></div>
+
+            <!-- AI Results Container -->
+            <div id="ai-results-content" class="ai-output-container">
+              <div class="empty-state">
+                <div class="empty-state-icon">
+                  <svg class="icon icon-lg" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                </div>
+                <h4>Generate Personalized Financial Analysis</h4>
+                <p>Click "Run AI Diagnostic" to have Google Gemini evaluate your current month's cash flow, highlight overspending categories, and produce a structured 30-day plan.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================
+           VIEW 7: SETTINGS & SYSTEM COMPLIANCE
+           ================================================================= -->
+      <section id="view-settings" class="app-view">
+        <div class="table-card" style="padding: 24px; max-width: 720px;">
+          <h3 style="font-size: 16px; margin-bottom: 16px;">Workspace Configuration & Compliance</h3>
+
+          <div style="margin-bottom: 20px;">
+            <div class="form-label">Operating Currency</div>
+            <div style="font-size: 14px; font-weight: 600; color: var(--text-main);">
+              Indian Rupee (INR - ₹)
+            </div>
+            <div class="form-hint">Standard numerical ledger formatting with lakhs and thousands separators.</div>
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <div class="form-label">AI Diagnostic Engine</div>
+            <div style="font-size: 14px; color: var(--text-main);" id="settings-gemini-status">
+              Checking Gemini API configuration...
+            </div>
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <div class="form-label">Data Storage Architecture</div>
+            <div style="font-size: 13px; color: var(--text-muted);">
+              Relational SQLite engine located at <code>instance/finance.db</code>. Each user's financial ledger is strictly isolated by user ID foreign key constraints.
+            </div>
+          </div>
+
+          <div style="margin-bottom: 24px; padding-top: 16px; border-top: 1px solid var(--border-color);">
+            <div class="form-label">Regulatory & Legal References</div>
+            <div style="display: flex; gap: 16px; font-size: 13px;">
+              <a href="/privacy-policy" target="_blank">Privacy Policy &rarr;</a>
+              <a href="/terms" target="_blank">Terms & Conditions &rarr;</a>
+            </div>
+          </div>
+
+          <div style="padding-top: 16px; border-top: 1px solid var(--border-color);">
+            <button id="settings-logout-btn" class="btn btn-danger btn-sm">
+              Terminate Current Session (Log Out)
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ==========================================================================
+     MODALS
+     ========================================================================== -->
+
+<!-- 1. Modal: Add / Edit Income -->
+<div id="add-income-modal" class="modal-backdrop">
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <div class="modal-title" id="income-modal-title">Record Income</div>
+      <button class="modal-close-btn" onclick="closeModal('add-income-modal')">&times;</button>
+    </div>
+    <form id="income-form">
+      <div class="modal-body">
+        <input type="hidden" id="income-id-input">
+        <div class="form-group">
+          <label class="form-label" for="income-source-input">Income Source <span class="required">*</span></label>
+          <input type="text" id="income-source-input" class="form-control" placeholder="e.g. Salary, Freelance, Dividend" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="income-amount-input">Amount in INR (₹) <span class="required">*</span></label>
+          <div class="input-with-currency">
+            <span class="currency-prefix">₹</span>
+            <input type="number" id="income-amount-input" class="form-control" placeholder="0.00" step="0.01" min="1" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="income-date-input">Credit Date <span class="required">*</span></label>
+          <input type="date" id="income-date-input" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="income-desc-input">Description / Reference Note</label>
+          <input type="text" id="income-desc-input" class="form-control" placeholder="Optional notes">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('add-income-modal')">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="save-income-btn">Save Income</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 2. Modal: Add / Edit Expense -->
+<div id="add-expense-modal" class="modal-backdrop">
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <div class="modal-title" id="expense-modal-title">Log Expense</div>
+      <button class="modal-close-btn" onclick="closeModal('add-expense-modal')">&times;</button>
+    </div>
+    <form id="expense-form">
+      <div class="modal-body">
+        <input type="hidden" id="expense-id-input">
+        <div class="form-group">
+          <label class="form-label" for="expense-category-input">Category <span class="required">*</span></label>
+          <select id="expense-category-input" class="form-control" required></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="expense-amount-input">Amount in INR (₹) <span class="required">*</span></label>
+          <div class="input-with-currency">
+            <span class="currency-prefix">₹</span>
+            <input type="number" id="expense-amount-input" class="form-control" placeholder="0.00" step="0.01" min="1" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="expense-date-input">Transaction Date <span class="required">*</span></label>
+          <input type="date" id="expense-date-input" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="expense-desc-input">Description / Payee Note</label>
+          <input type="text" id="expense-desc-input" class="form-control" placeholder="e.g. Supermarket grocery, Electricity bill">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('add-expense-modal')">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="save-expense-btn">Record Expense</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 3. Modal: Set Budget -->
+<div id="set-budget-modal" class="modal-backdrop">
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <div class="modal-title">Set Category Budget Limit</div>
+      <button class="modal-close-btn" onclick="closeModal('set-budget-modal')">&times;</button>
+    </div>
+    <form id="budget-form">
+      <div class="modal-body">
+        <input type="hidden" id="budget-id-input">
+        <div class="form-group">
+          <label class="form-label" for="budget-category-input">Category <span class="required">*</span></label>
+          <select id="budget-category-input" class="form-control" required></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="budget-limit-input">Monthly Limit in INR (₹) <span class="required">*</span></label>
+          <div class="input-with-currency">
+            <span class="currency-prefix">₹</span>
+            <input type="number" id="budget-limit-input" class="form-control" placeholder="0.00" step="0.01" min="1" required>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('set-budget-modal')">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="save-budget-btn">Establish Limit</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 4. Modal: Add / Edit Savings Goal -->
+<div id="add-goal-modal" class="modal-backdrop">
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <div class="modal-title" id="goal-modal-title">Create Savings Goal</div>
+      <button class="modal-close-btn" onclick="closeModal('add-goal-modal')">&times;</button>
+    </div>
+    <form id="goal-form">
+      <div class="modal-body">
+        <input type="hidden" id="goal-id-input">
+        <div class="form-group">
+          <label class="form-label" for="goal-name-input">Goal Title <span class="required">*</span></label>
+          <input type="text" id="goal-name-input" class="form-control" placeholder="e.g. Emergency Fund, Laptop, Travel" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="goal-target-input">Target Amount in INR (₹) <span class="required">*</span></label>
+          <div class="input-with-currency">
+            <span class="currency-prefix">₹</span>
+            <input type="number" id="goal-target-input" class="form-control" placeholder="0.00" step="0.01" min="1" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="goal-current-input">Currently Accumulated (₹)</label>
+          <div class="input-with-currency">
+            <span class="currency-prefix">₹</span>
+            <input type="number" id="goal-current-input" class="form-control" placeholder="0.00" step="0.01" min="0" value="0">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="goal-date-input">Target Completion Date <span class="required">*</span></label>
+          <input type="date" id="goal-date-input" class="form-control" required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('add-goal-modal')">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="save-goal-btn">Save Goal</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 5. Modal: Allocate Funds to Goal -->
+<div id="deposit-goal-modal" class="modal-backdrop">
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <div class="modal-title">Allocate Funds to Goal</div>
+      <button class="modal-close-btn" onclick="closeModal('deposit-goal-modal')">&times;</button>
+    </div>
+    <form id="deposit-form">
+      <div class="modal-body">
+        <input type="hidden" id="deposit-goal-id">
+        <div style="font-size: 13px; margin-bottom: 12px; color: var(--text-muted);" id="deposit-goal-name"></div>
+        <div class="form-group">
+          <label class="form-label" for="deposit-amount-input">Allocation Amount in INR (₹) <span class="required">*</span></label>
+          <div class="input-with-currency">
+            <span class="currency-prefix">₹</span>
+            <input type="number" id="deposit-amount-input" class="form-control" placeholder="0.00" step="0.01" min="1" required>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('deposit-goal-modal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Credit Goal</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toast-container" class="toast-container"></div>
+
+<!-- JavaScript Modules -->
+<script src="/static/js/app.js"></script>
+<script src="/static/js/dashboard.js"></script>
+<script src="/static/js/income.js"></script>
+<script src="/static/js/expenses.js"></script>
+<script src="/static/js/budgets.js"></script>
+<script src="/static/js/goals.js"></script>
+<script src="/static/js/ai-advisor.js"></script>
+
+</body>
+</html>
